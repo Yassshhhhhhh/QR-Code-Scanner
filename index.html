@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QR Code Scanner</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
+    <style>
+        /* General Styles */
+        body {
+            font-family: 'Poppins', sans-serif;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            overflow: hidden;
+            background: linear-gradient(135deg, #1d2b64, #f8cdda); /* Celestial gradient */
+            animation: gradientAnimation 15s ease infinite;
+        }
+
+        @keyframes gradientAnimation {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+
+        .card-custom {
+            border: none;
+            border-radius: 12px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.4); /* Strong drop shadow */
+            overflow: hidden;
+            background: rgba(255, 255, 255, 0.9); /* Semi-transparent background */
+        }
+
+        .scanner-wrapper {
+            width: 100%;
+            max-width: 500px;
+            height: auto;
+            border: 4px solid #fff; /* White border */
+            border-radius: 12px; /* Rounded corners */
+            position: relative;
+            overflow: hidden;
+            transition: transform 0.3s ease-in-out;
+        }
+
+        .scanner-wrapper:hover {
+            transform: translateY(-10px); /* Lift effect on hover */
+        }
+
+        .go-to-link {
+            display: inline-block;
+            padding: 12px 24px;
+            background-color: #3498db; /* Blue background color */
+            color: #ecf0f1; /* Light text color */
+            font-size: 24px;
+            text-decoration: none;
+            border-radius: 24px; /* Larger rounded corners */
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+            transition: transform 0.2s ease, background-color 0.3s ease;
+        }
+
+        .go-to-link:hover {
+            transform: scale(1.1); /* Scale up on hover */
+            background-color: #2980b9; /* Darker blue on hover */
+        }
+
+        .overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle closest-side, transparent 50%, rgba(0, 0, 0, 0.8) 80%); /* Overlay effect */
+            animation: scan 3s linear infinite; /* Scan animation */
+            pointer-events: none; /* Allow interaction with scanner beneath */
+        }
+
+        @keyframes scan {
+            0% {
+                transform: translateX(-100%);
+            }
+            100% {
+                transform: translateX(100%);
+            }
+        }
+
+        .loading-spinner {
+            display: none;
+            border: 4px solid rgba(0, 0, 0, 0.1);
+            border-left-color: #3498db;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container d-flex justify-content-center align-items-center">
+        <div class="card card-custom">
+            <div class="card-body text-center">
+                <div id="scanner" class="scanner-wrapper mb-4">
+                    <div class="overlay"></div>
+                </div>
+                <div id="result_container" class="d-none text-center"></div>
+                <div class="loading-spinner" id="loading_spinner"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const resultContainer = document.getElementById('result_container');
+        const loadingSpinner = document.getElementById('loading_spinner');
+
+        let onSuccess = function (text, result) {
+            loadingSpinner.style.display = 'block'; // Show loading spinner
+            setTimeout(() => {
+                const linkHTML = `<a class="go-to-link" href="${text}" target="_blank">Go to Link</a>`;
+                resultContainer.innerHTML = linkHTML;
+                resultContainer.classList.remove('d-none');
+                loadingSpinner.style.display = 'none'; // Hide loading spinner
+                html5QrCodeScanner.clear();
+            }, 2000); // Simulate a 2-second loading time
+        };
+
+        let onError = function (error) {
+            console.error(error);
+        };
+
+        let html5QrCodeScanner = new Html5QrcodeScanner(
+            "scanner", { fps: 10, qrbox: { width: 250, height: 250 } }
+        );
+
+        html5QrCodeScanner.render(onSuccess, onError);
+    </script>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+
+</html>
